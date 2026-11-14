@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Atyş tejribeligini hasaba alyş ulgamy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'w3.css' %}">
+    <style>
+        body {
+            /* Harby atyş oýun stili: Goýy harby reňk, taktiki gradient we nisan efecti üçin fon */
+            background-color: #0b130f;
+            background-image: 
+                radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 60%),
+                linear-gradient(rgba(5, 10, 7, 0.92), rgba(10, 25, 15, 0.92)), 
+                url("{% static 'atys.png' %}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 0;
+        }
+
+        .baslyk {
+            color: #34d399;
+            font-size: 2.3rem;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.5), 0 4px 10px rgba(0, 0, 0, 0.9);
+            margin-top: 6vh;
+            margin-bottom: 2vh;
+            padding: 0 20px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .dasy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+            padding-bottom: 10vh;
+        }
+
+        /* Oýun interfeýs (UI) stiline laýyk modal penjiresi */
+        .w3-modal-content {
+            background-color: #121c16;
+            color: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Inputlaryň harby-taktiki dizaýny */
+        .w3-input {
+            background-color: #1b2e22 !important;
+            color: #ffffff !important;
+            border-radius: 12px !important;
+            padding: 14px !important;
+            border: 1px solid #2d4a37 !important;
+        }
+
+        .w3-input:focus {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Başlyk -->
+    <div class="baslyk">Atış tejribeligini hasaba alyş ulgamy</div>
+
+    <div class="dasy">
+        <!-- Django Message-leri -->
+        {% if messages %}
+            <div style="background-color: rgba(220, 38, 38, 0.2); padding: 12px 24px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.4);">
+                {% for message in messages %}
+                    <div style="color: rgb(254, 202, 202); text-align: center;"><h3><b>{{ message }}</b></h3></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Esasy Düwme -->
+        <div class="w3-container">    
+            <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-large w3-round-xlarge" style="padding: 16px 36px; font-weight: bold; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3); background-color: #059669 !important; color: white; letter-spacing: 1px;">
+                ULGAMA GIRMEK
+            </button>
+        
+            <!-- Modal Giriş Penjiresi -->
+            <div id="id01" class="w3-modal">
+                <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:450px; margin: auto;">
+            
+                    <div class="w3-center" style="position: relative; padding-top: 25px; background-color: #0f1a14;">
+                        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal" style="color: #aaa; border-radius: 0 20px 0 0;">&times;</span>
+                        <img src="{% static 'avatar.png' %}" alt="Avatar" style="width:28%; border: 2px solid #10b981; padding: 3px;" class="w3-circle">
+                    </div>  
+
+                    <form class="w3-container" method="POST" style="background-color: #0f1a14; padding-bottom: 15px;">
+                        {% csrf_token %}
+                        <div class="w3-section" style="padding: 0 25px;">
+                            <label style="font-weight: bold; color: #34d399; font-size: 0.9rem;">ULANYJY ADYŇYZ</label>
+                            <input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Username" name="username" required>
+                            
+                            <label style="font-weight: bold; color: #34d399; font-size: 0.9rem;">PAROLY GIRIZ</label>
+                            <input class="w3-input w3-border w3-margin-bottom" type="password" placeholder="Password" name="password" required>
+                            
+                            <button class="w3-button w3-block w3-section w3-round-xlarge w3-padding" type="submit" style="font-weight: bold; font-size: 1.1rem; background-color: #059669 !important; color: white; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);">GIRMEK</button>         
+                        </div>
+                    </form>
+         
+                    <div class="w3-container w3-border-top w3-padding-16 w3-center" style="background-color: #09100c; border-top: 1px solid #1b2e22 !important;">
+                        <a href="{% url 'home' %}" style="font-weight: bolder; color: #34d399; text-decoration: none; letter-spacing: 0.5px;"><h4>Myhman bolup girmek</h4></a>
+                    </div>
+         
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

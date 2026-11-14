@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<title>Agza</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{% static "w3.css" %} ">
+<body>
+<div style="margin-left:30%;">
+<form method="POST" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" style="width:550px">
+    {% csrf_token %}
+    <br>
+<h2 class="w3-center" style="font-weight:bolder;">Agza bolmak</h2>
+<br>
+{% if messages %}
+        {% for message in messages %}
+            <div style="color:coral;">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <div class="w3-row w3-section">
+      <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+        <div class="w3-rest">
+          <input class="w3-input w3-border" style="width: 500px;" name="usr" type="text" placeholder="Ulanyjy adyňyz"  required>
+        </div>
+    </div>
+
+<div class="w3-row w3-section">
+  <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+    <div class="w3-rest">
+      <input class="w3-input w3-border" style="width: 500px;" name="at" type="text" placeholder="Adyňyz"  required>
+    </div>
+</div>
+
+<div class="w3-row w3-section">
+  <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+    <div class="w3-rest">
+      <input class="w3-input w3-border" style="width: 500px;" name="fam" type="text" placeholder="Familiýaňyz" required>
+    </div>
+</div>
+
+<div class="w3-row w3-section">
+    <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+      <div class="w3-rest">
+        <input class="w3-input w3-border" style="width: 500px;" name="pswd" type="password" placeholder="Parol"  required>
+      </div>
+  </div>
+  
+  <div class="w3-row w3-section">
+    <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+      <div class="w3-rest">
+        <input class="w3-input w3-border" style="width: 500px;" name="pswd2" type="password" placeholder="Parol tassylamak" required>
+      </div>
+  </div>
+
+
+<p class="w3-center">
+<input class="w3-button w3-section w3-blue w3-ripple" type="submit" value="Agza bolmak" >
+</p>
+<a href="{% url "login" %}" class="w3-button w3-section w3-blue w3-ripple"> Login </a>
+</form>
+</div>
+
+</body>
+
+</html>

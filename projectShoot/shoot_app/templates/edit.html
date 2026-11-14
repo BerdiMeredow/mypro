@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<title>Goşmak</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{% static 'w3.css' %} ">
+<body >
+    <br><br><br><br>
+<div style="margin-left: 30%;">
+  <a href="{% url "home" %}"> <button class="w3-button w3-green"> Yza </button></a>
+
+    <form method="POST" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" style="width: 700px; " align="center">
+        {% csrf_token %}
+        
+    <h2 class="w3-center">Üýtgetmek</h2>
+     
+    <div align="center">
+        <div class="w3-row w3-section">
+            <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+              <div class="w3-rest">
+                <input class="w3-input w3-border" style="width: 500px;" name="at" type="text" value="{{shot.ady}}">
+              </div>
+          </div>
+          
+          <div class="w3-row w3-section">
+            <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+              <div class="w3-rest">
+                <input class="w3-input w3-border" style="width: 500px;" name="fam" type="text" value="{{shot.fam}}">
+              </div>
+          </div>
+          
+          <select class="w3-select" style="width:250px;" name="topar">
+            <option value="{{shot.topar}}" selected>{{shot.topar}} -nji topar</option>
+            <option value="121">121-nji topar</option>
+            <option value="122">122-nji topar</option>
+            <option value="221">221-nji topar</option>
+            <option value="222">222-nji topar</option>
+            <option value="131">131-nji topar</option>
+            <option value="132">132-nji topar</option>
+            <option value="231">231-nji topar</option>
+            <option value="232">232-nji topar</option>
+            <option value="141">141-nji topar</option>
+            <option value="142">142-nji topar</option>
+            <option value="241">241-nji topar</option>
+            <option value="242">242-nji topar</option>
+            <option value="151">151-nji topar</option>
+            <option value="152">152-nji topar</option>
+            <option value="251">251-nji topar</option>
+            <option value="252">252-nji topar</option>
+          </select>
+
+          <div class="w3-row w3-section">
+            <div class="w3-col" style="width:50px"><i class="w3-large "></i></div>
+              <div class="w3-rest">
+                <input class="w3-input w3-border" style="width: 200px;" name="pm1_1" type="number" value="{{shot.pm1_1}}">
+              </div>
+          </div>
+          
+          <div class="w3-row w3-section">
+            <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+              <div class="w3-rest">
+                <input class="w3-input w3-border" style="width: 200px;" name="pm1_2" type="number" value="{{shot.pm1_2}}">
+              </div>
+          </div>
+          
+          <div class="w3-row w3-section">
+            <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+              <div class="w3-rest">
+                <input class="w3-input w3-border" style="width: 200px;" name="pm2_1" type="number" value="{{shot.pm2_1}}">
+              </div>
+          </div>
+          
+          <div class="w3-row w3-section">
+              <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+                <div class="w3-rest">
+                  <input class="w3-input w3-border" style="width: 200px;" name="pm2_2" type="number" value="{{shot.pm2_2}}">
+                </div>
+            </div>
+            
+            <div class="w3-row w3-section">
+              <div class="w3-col" style="width:50px"><i class="w3-xxlarge "></i></div>
+                <div class="w3-rest">
+                  <input class="w3-input w3-border" style="width: 200px;" name="ak74" type="number" value="{{shot.ak74}}">
+                </div>
+            </div>
+          
+    </div>
+    
+    <p class="w3-center">
+    {% if user.is_superuser %}<button class="w3-button w3-section w3-blue w3-ripple" type="submit"> Üytgetmek </button>{% endif %}
+    </p>
+    </form>
+</div>
+
+</body>
+
+</html> 

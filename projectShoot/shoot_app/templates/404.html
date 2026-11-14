@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>404</title>
+    <meta content="" name="description">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/datatables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}?v=20260512-footer-1">
+  
+</head>
+<body>
+    <header class="header_part">        
+        <h4>Harby talyplaryň sanawy</h4>
+        <div class="container" style="padding:5px;">        
+        <a href="{% url "home" %}" style="color: rgb(180, 246, 248); float:left; font-size: larger; border: 1px solid; padding: 3px; border-radius: 10px;">Bas sahypa</a>
+        <a href="{% url "logout" %}" style="color: rgb(180, 246, 248); float:right; font-size: larger; border: 1px solid; padding: 3px; border-radius: 10px;">Logout</a> 
+        </div>
+    </header>   
+    <h2 style="text-align: center; color: darkred; margin-top: 15%;">404! Sahypa tapylmady!!!</h2>    
+           
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatables.min.js' %}"></script>
+    <script src="{% static 'assets/js/pdfmake.min.js' %}"></script>
+    <script src="{% static 'assets/js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+</body>
+</html>

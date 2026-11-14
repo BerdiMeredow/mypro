@@ -1,0 +1,425 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tk">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Harby talyplaryň sanawy</title>
+    <meta content="" name="description">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/datatables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}?v=20260512-footer-1">
+</head>
+
+<body>
+    <!-- Ýokarky Döwrebap Harby Menýu -->
+    <header class="header_part">        
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 18px 0;">
+            
+            <!-- Çep tarap: Goşmak we Faýl ýükle düwmeleri -->
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser and user.is_staff %}            
+                        <a href="{% url 'create' %}">
+                            <button class="btn btn-cyber-green">+Goşmak</button>
+                        </a>          
+                        <!-- Suratda görkezilen ýere goşulan Faýl ýükle düwmäni -->
+                        <button onclick="document.getElementById('uploadModal').style.display='block'" class="btn btn-cyber-outline">📁 Faýl ýükle</button>
+                    {% endif %} 
+                {% endif %}
+            </div>
+
+            <!-- Ortada Başlyk -->
+            <h4 class="nav-title">Harby talyplaryň sanawy</h4>
+
+            <!-- Sag tarap: Düwmeler we Çykmak -->
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <a href="{% url 'reiting' %}">
+                    <button class="btn btn-cyber-outline">Reýting</button>
+                </a>
+                <a href="{% url 'simulyator' %}">
+                    <button class="btn btn-cyber-outline">Ýaraglar</button>
+                </a>
+                <a href="{% url 'logout' %}" class="btn-cyber-logout">Çykyş</a>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Faýl ýüklemek üçin Pop-up Modal Penjiresi -->
+    <div id="uploadModal" class="upload-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(5px);">
+        <div class="upload-content" style="background:#121c16; margin:15% auto; padding:30px; border:1px solid rgba(16, 185, 129, 0.4); width:90%; max-width:450px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.8); text-align:center;">
+            <span onclick="document.getElementById('uploadModal').style.display='none'" style="float:right; cursor:pointer; color:#aaa; font-size:24px;">&times;</span>
+            <h3 style="color: #34d399; margin-bottom: 20px; font-weight: 800;">Word / Excel ýüklemek</h3>
+            
+            <form method="POST" enctype="multipart/form-data" action="">
+                {% csrf_token %}
+                <input type="file" name="import_file" accept=".docx, .xlsx, .csv" required style="color: #fff; margin-bottom: 20px; width: 100%; padding: 10px; background: #1b2e22; border: 1px solid #2d4a37; border-radius: 8px;">
+                <button type="submit" class="btn btn-cyber-green" style="width: 100%;">Maglumatlary Awtomatik Goş</button>
+            </form>
+        </div>
+    </div>
+
+    <main class="page_content">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                    <!-- Filter Bar -->
+                    <div class="filter_bar">
+                        <form method="get" class="filter_form">
+                            <label for="topar-filter" class="filter_label">Topar saýlaň:</label>
+                            <select name="topar" id="topar-filter" class="form-select filter_select" onchange="this.form.submit()">
+                                <option value="">Hemmesi</option>
+                                {% for topar in toparlar %}
+                                <option value="{{ topar }}" {% if selected_topar == topar %}selected{% endif %}>{{ topar }}</option>
+                                {% endfor %}
+                            </select>
+                            <noscript>
+                                <button type="submit" class="btn btn-success">Görkez</button>
+                            </noscript>
+                            {% if selected_topar %}
+                            <a href="{% url 'home' %}" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">Arassala</a>
+                            {% endif %}
+                        </form>
+                        <div class="filter_status">
+                            <span>Status:</span> {% if selected_topar %}Topar: {{ selected_topar }}{% else %}Hemme Toparlar{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Data Table (Oýun Stili Tablisa) -->
+                    <div class="data_table">
+                        <table id="example" class="table table-dark table-striped table-bordered taktik-table">
+                            <thead>
+                                <tr>
+                                    <th>T/b</th>
+                                    <th>Ady</th>
+                                    <th>Familiýasy</th>
+                                    <th>Topary</th>
+                                    <th>PM 1-nji</th>
+                                    <th>PM 2-nji</th>
+                                    <th>AK-74</th>
+                                    <th>PM 1-nji</th>
+                                    <th>PM 2-nji</th>
+                                    <th>Umumy</th>
+                                    {% if user.is_authenticated %}
+                                        {% if user.is_superuser and user.is_staff %}<th>Üýtgetmek</th>{% endif %}
+                                        {% if user.is_superuser and user.is_staff %}<th>Öçürmek</th>{% endif %}                                        
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cont in conts %}
+                                <tr>
+                                    <td><span class="badge-counter">{{ forloop.counter }}</span></td>
+                                    <td><strong>{{ cont.ady }}</strong></td>
+                                    <td><strong>{{ cont.fam }}</strong></td>
+                                    <td><span class="badge-topar">{{ cont.topar }}</span></td>
+                                    <td>{{ cont.pm1_1 }}</td>
+                                    <td>{{ cont.pm1_2 }}</td>
+                                    <td>{{ cont.pm2_1 }}</td>
+                                    <td>{{ cont.pm2_2 }}</td>
+                                    <td>{{ cont.ak74 }}</td>
+                                    <td><span class="badge-umumy">{{ cont.umumy }}</span></td>
+                                    {% if user.is_authenticated %}
+                                        {% if user.is_superuser and user.is_staff %}
+                                            <td><a href="{% url 'edit' id=cont.id %}" class="actions">Üýtget</a></td>
+                                        {% endif %}
+                                        {% if user.is_superuser and user.is_staff %}
+                                            <td><a href="{% url 'delete' id=cont.id %}" class="actions-danger">Öçür</a></td>
+                                        {% endif %}
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site_footer">
+        <div class="container">
+            <p class="footer_main">Ähli hukuklar goralan &copy; 2026 | mgd</p>
+            <div class="footer_extra">
+                <div class="footer_extra_body">
+                    <h6 class="footer_extra_title">Türkmenistanyň ...</h6>
+                    <p><strong>Salgy:</strong> Türkmenistan, Aşgabat şäheri,</p>
+                    <p><strong>Tel:</strong> (+993 12) 38-53-19 <strong>Faks:</strong> (+993 12) 92-44-72</p>
+                    <p><strong>Elektron poçta:</strong></p>
+                </div>
+                <div class="footer_extra_bottom">
+                    <p>Ähli hukuklar goralan &copy; 2026 | mgd</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Döwrebap Oyun / Taktiki CSS Stilleri -->
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 10%, #0f1f17 0%, #070d0a 100%) !important;
+            color: #e2e8f0 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .header_part {
+            background: rgba(7, 13, 10, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8);
+        }
+
+        .nav-title {
+            color: #34d399 !important;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Cyber / Taktiki Düwmeler */
+        .btn-cyber-green {
+            background: linear-gradient(135deg, #059669, #10b981) !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-cyber-green:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.7);
+        }
+
+        .btn-cyber-outline {
+            background: rgba(27, 46, 34, 0.8) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.5) !important;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cyber-outline:hover {
+            background: #059669 !important;
+            color: #ffffff !important;
+            border-color: #059669 !important;
+            box-shadow: 0 0 15px rgba(5, 150, 105, 0.5);
+        }
+
+        .btn-cyber-logout {
+            color: #fca5a5 !important;
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 10px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cyber-logout:hover {
+            background: #dc2626;
+            color: #ffffff !important;
+            text-decoration: none;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+        }
+
+        /* Filter Bar */
+        .filter_bar {
+            background: linear-gradient(145deg, #121c16, #0d1511);
+            padding: 18px 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .filter_form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter_label {
+            font-weight: 700;
+            color: #34d399;
+            margin-bottom: 0;
+        }
+
+        .filter_select {
+            background-color: #18281f !important;
+            color: #ffffff !important;
+            border: 1px solid #2d4a37 !important;
+            border-radius: 10px;
+            padding: 8px 15px;
+            min-width: 180px;
+        }
+
+        .filter_status {
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .filter_status span {
+            color: #34d399;
+        }
+
+        /* Tablisa (Table) Stili */
+        .data_table {
+            background: linear-gradient(145deg, #121c16, #0d1511);
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        table.taktik-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        table.taktik-table th {
+            background-color: #17261d !important;
+            color: #34d399 !important;
+            border-bottom: 2px solid #059669 !important;
+            padding: 14px 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        table.taktik-table td {
+            color: #e2e8f0 !important;
+            border-color: rgba(27, 46, 34, 0.6) !important;
+            padding: 14px 10px;
+            vertical-align: middle;
+            background: rgba(18, 28, 22, 0.4);
+        }
+
+        table.taktik-table tr:hover td {
+            background-color: rgba(16, 185, 129, 0.12) !important;
+            color: #ffffff !important;
+        }
+
+        /* Badge we tag görnüşleri */
+        .badge-counter {
+            background: #1b2e22;
+            color: #34d399;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-topar {
+            background: rgba(14, 116, 144, 0.2);
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .badge-umumy {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 900;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        /* Action Düwmeleri (Üýtget / Öçür) */
+        .actions {
+            color: #34d399 !important;
+            background-color: rgba(16, 185, 129, 0.15);
+            padding: 6px 14px;
+            font-weight: 700;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .actions:hover {
+            color: #fff !important;
+            background-color: #059669;
+            box-shadow: 0 0 10px rgba(5, 150, 105, 0.5);
+            text-decoration: none;
+        }
+
+        .actions-danger {
+            color: #fca5a5 !important;
+            background-color: rgba(220, 38, 38, 0.15);
+            padding: 6px 14px;
+            font-weight: 700;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .actions-danger:hover {
+            color: #fff !important;
+            background-color: #dc2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+            text-decoration: none;
+        }
+
+        /* Footer Stili */
+        .site_footer {
+            background-color: #050a08 !important;
+            border-top: 2px solid rgba(16, 185, 129, 0.2);
+            color: #94a3b8;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+    </style>
+
+    <!-- JS Skriptler -->
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatables.min.js' %}"></script>
+    <script src="{% static 'assets/js/pdfmake.min.js' %}"></script>
+    <script src="{% static 'assets/js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+    <script>
+        (function () {
+            function toggleFooterExtra() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                var fullHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+                var atBottom = (scrollTop + windowHeight) >= (fullHeight - 8);
+                document.body.classList.toggle('footer-expanded', atBottom);
+            }
+
+            window.addEventListener('scroll', toggleFooterExtra, { passive: true });
+            window.addEventListener('resize', toggleFooterExtra);
+            toggleFooterExtra();
+        })();
+    </script>
+</body>
+
+</html>

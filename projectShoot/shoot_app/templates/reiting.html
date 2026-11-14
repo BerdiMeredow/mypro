@@ -1,0 +1,619 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tk">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Reýting - Harby talyplaryň sanawy</title>
+    <meta content="" name="description">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/datatables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}?v=20260512-footer-1">
+</head>
+
+<body>
+    <!-- Ýokarky Harby Stildeki Header / Navbar -->
+    <header class="header_part">        
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 18px 0;">
+            
+            <!-- Çep tarap: Başlyk we maglumat -->
+            <div>
+                <h4 class="nav-title"> Reýting Sahypasy</h4>
+                <h6 style="color: #94a3b8; margin: 0; font-size: 0.9rem;">Iň gowy we pes netijeler</h6>
+            </div>
+
+            <!-- Sag tarap: Düwmeler we Çykmak -->
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <a href="{% url 'home' %}">
+                    <button class="btn btn-cyber-outline">Yza gitmek</button>
+                </a>
+                <a href="{% url 'logout' %}" class="btn-cyber-logout">Çykyş</a>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="page_content">
+        <div class="container" style="padding-top: 30px; padding-bottom: 30px;">
+            
+            <!-- Export Düwmeleri üçin ýer -->
+            <div id="reiting_export_buttons" class="mb-4"></div>
+
+            <!-- Gizlin Export Tablisa (PDF we Excel üçin) -->
+            <table id="reiting_export_table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Bolum</th>
+                        <th>T/b</th>
+                        <th>Ady</th>
+                        <th>Familiýasy</th>
+                        <th>Topary</th>
+                        <th>PM 1-nji atyş</th>
+                        <th>PM 2-nji atyş</th>
+                        <th>AK-74 atyş</th>
+                        <th>PM 2-nji atyş</th>
+                        <th>PM 1-nji atyş</th>
+                        <th>Umumy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cont in conts %}
+                    <tr>
+                        <td>Ýokary baha alanlar</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ cont.ady }}</td>
+                        <td>{{ cont.fam }}</td>
+                        <td>{{ cont.topar }}</td>
+                        <td>{{ cont.pm1_1 }}</td>
+                        <td>{{ cont.pm1_2 }}</td>
+                        <td>{{ cont.pm2_1 }}</td>
+                        <td>{{ cont.pm2_2 }}</td>
+                        <td>{{ cont.ak74 }}</td>
+                        <td>{{ cont.umumy }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for pes in pesler %}
+                    <tr>
+                        <td>Pes baha alanlar</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ pes.ady }}</td>
+                        <td>{{ pes.fam }}</td>
+                        <td>{{ pes.topar }}</td>
+                        <td>{{ pes.pm1_1 }}</td>
+                        <td>{{ pes.pm1_2 }}</td>
+                        <td>{{ pes.pm2_1 }}</td>
+                        <td>{{ pes.pm2_2 }}</td>
+                        <td>{{ pes.ak74 }}</td>
+                        <td>{{ pes.umumy }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for gyz in gyzlar %}
+                    <tr>
+                        <td>Gyzlaryň reýtingi</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ gyz.ady }}</td>
+                        <td>{{ gyz.fam }}</td>
+                        <td>{{ gyz.topar }}</td>
+                        <td>{{ gyz.pm1_1 }}</td>
+                        <td>{{ gyz.pm1_2 }}</td>
+                        <td>{{ gyz.pm2_1 }}</td>
+                        <td>{{ gyz.pm2_2 }}</td>
+                        <td>{{ gyz.ak74 }}</td>
+                        <td>{{ gyz.umumy }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for gyz_pes in gyz_pesler %}
+                    <tr>
+                        <td>Gyzlaryň pes baha alanlary</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ gyz_pes.ady }}</td>
+                        <td>{{ gyz_pes.fam }}</td>
+                        <td>{{ gyz_pes.topar }}</td>
+                        <td>{{ gyz_pes.pm1_1 }}</td>
+                        <td>{{ gyz_pes.pm1_2 }}</td>
+                        <td>{{ gyz_pes.pm2_1 }}</td>
+                        <td>{{ gyz_pes.pm2_2 }}</td>
+                        <td>{{ gyz_pes.ak74 }}</td>
+                        <td>{{ gyz_pes.umumy }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 1. Ýokary baha alanlar -->
+            <div class="data_table mb-5">
+                <h5 class="table-section-title text-success">🟢 Ýokary baha alanlar</h5>
+                <div class="table-responsive">
+                    <table id="reiting_yokary" class="table table-dark table-striped table-bordered taktik-table">
+                        <thead>
+                            <tr>
+                                <th>T/b</th>
+                                <th>Ady</th>
+                                <th>Familiýasy</th>
+                                <th>Topary</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>AK-74 atyş</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>Umumy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cont in conts %}
+                            <tr>
+                                <td><span class="badge-counter">{{ forloop.counter }}</span></td>
+                                <td><strong>{{ cont.ady }}</strong></td>
+                                <td><strong>{{ cont.fam }}</strong></td>
+                                <td><span class="badge-topar">{{ cont.topar }}</span></td>
+                                <td>{{ cont.pm1_1 }}</td>
+                                <td>{{ cont.pm1_2 }}</td>
+                                <td>{{ cont.pm2_1 }}</td>
+                                <td>{{ cont.pm2_2 }}</td>
+                                <td>{{ cont.ak74 }}</td>
+                                <td><span class="badge-umumy">{{ cont.umumy }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. Pes baha alanlar -->
+            <div class="data_table mb-5">
+                <h5 class="table-section-title text-danger">🔴 Pes baha alanlar</h5>
+                <div class="table-responsive">
+                    <table id="reiting_pes" class="table table-dark table-striped table-bordered taktik-table">
+                        <thead>
+                            <tr>
+                                <th>T/b</th>
+                                <th>Ady</th>
+                                <th>Familiýasy</th>
+                                <th>Topary</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>AK-74 atyş</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>Umumy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pes in pesler %}
+                            <tr>
+                                <td><span class="badge-counter-danger">{{ forloop.counter }}</span></td>
+                                <td><strong>{{ pes.ady }}</strong></td>
+                                <td><strong>{{ pes.fam }}</strong></td>
+                                <td><span class="badge-topar">{{ pes.topar }}</span></td>
+                                <td>{{ pes.pm1_1 }}</td>
+                                <td>{{ pes.pm1_2 }}</td>
+                                <td>{{ pes.pm2_1 }}</td>
+                                <td>{{ pes.pm2_2 }}</td>
+                                <td>{{ pes.ak74 }}</td>
+                                <td><span class="badge-umumy-danger">{{ pes.umumy }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. Gyzlaryň reýtingi -->
+            <div class="data_table mb-5">
+                <h5 class="table-section-title text-warning">🟡 Gyzlaryň reýtingi</h5>
+                <div class="table-responsive">
+                    <table id="reiting_gyz" class="table table-dark table-striped table-bordered taktik-table">
+                        <thead>
+                            <tr>
+                                <th>T/b</th>
+                                <th>Ady</th>
+                                <th>Familiýasy</th>
+                                <th>Topary</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>AK-74 atyş</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>Umumy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gyz in gyzlar %}
+                            <tr>
+                                <td><span class="badge-counter-warning">{{ forloop.counter }}</span></td>
+                                <td><strong>{{ gyz.ady }}</strong></td>
+                                <td><strong>{{ gyz.fam }}</strong></td>
+                                <td><span class="badge-topar">{{ gyz.topar }}</span></td>
+                                <td>{{ gyz.pm1_1 }}</td>
+                                <td>{{ gyz.pm1_2 }}</td>
+                                <td>{{ gyz.pm2_1 }}</td>
+                                <td>{{ gyz.pm2_2 }}</td>
+                                <td>{{ gyz.ak74 }}</td>
+                                <td><span class="badge-umumy-warning">{{ gyz.umumy }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. Gyzlaryň pes baha alanlary -->
+            <div class="data_table mb-5">
+                <h5 class="table-section-title text-info">🔵 Gyzlaryň pes baha alanlary</h5>
+                <div class="table-responsive">
+                    <table id="reiting_gyz_pes" class="table table-dark table-striped table-bordered taktik-table">
+                        <thead>
+                            <tr>
+                                <th>T/b</th>
+                                <th>Ady</th>
+                                <th>Familiýasy</th>
+                                <th>Topary</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>AK-74 atyş</th>
+                                <th>PM 1-nji atyş</th>
+                                <th>PM 2-nji atyş</th>
+                                <th>Umumy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gyz_pes in gyz_pesler %}
+                            <tr>
+                                <td><span class="badge-counter">{{ forloop.counter }}</span></td>
+                                <td><strong>{{ gyz_pes.ady }}</strong></td>
+                                <td><strong>{{ gyz_pes.fam }}</strong></td>
+                                <td><span class="badge-topar">{{ gyz_pes.topar }}</span></td>
+                                <td>{{ gyz_pes.pm1_1 }}</td>
+                                <td>{{ gyz_pes.pm1_2 }}</td>
+                                <td>{{ gyz_pes.pm2_1 }}</td>
+                                <td>{{ gyz_pes.pm2_2 }}</td>
+                                <td>{{ gyz_pes.ak74 }}</td>
+                                <td><span class="badge-umumy">{{ gyz_pes.umumy }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site_footer">
+        <div class="container">
+            <p class="footer_main">Ähli hukuklar goralan &copy; 2026 | mgd</p>
+            <div class="footer_extra">
+                <div class="footer_extra_body">
+                    <h6 class="footer_extra_title">Türkmenistanyň ...</h6>
+                    <p><strong>Salgy:</strong> Türkmenistan, Aşgabat şäheri,</p>
+                    <p><strong>Tel:</strong> (+993 12) 38-53-19 <strong>Faks:</strong> (+993 12) 92-44-72</p>
+                    <p><strong>Elektron poçta:</strong></p>
+                </div>
+                <div class="footer_extra_bottom">
+                    <p>Ähli hukuklar goralan &copy; 2026 | mgd</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CSS Dizaýn Stilleri -->
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 10%, #0f1f17 0%, #070d0a 100%) !important;
+            color: #e2e8f0 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .header_part {
+            background: rgba(7, 13, 10, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8);
+        }
+
+        .nav-title {
+            color: #34d399 !important;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Düwmeler */
+        .btn-cyber-outline {
+            background: rgba(27, 46, 34, 0.8) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.5) !important;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cyber-outline:hover {
+            background: #059669 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 15px rgba(5, 150, 105, 0.5);
+        }
+
+        .btn-cyber-logout {
+            color: #fca5a5 !important;
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 10px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cyber-logout:hover {
+            background: #dc2626;
+            color: #ffffff !important;
+            text-decoration: none;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+        }
+
+        /* Tablisa Kartalary */
+        .data_table {
+            background: linear-gradient(145deg, #121c16, #0d1511);
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+        }
+
+        .table-section-title {
+            font-weight: 800;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+        }
+
+        table.taktik-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        table.taktik-table th {
+            background-color: #17261d !important;
+            color: #34d399 !important;
+            border-bottom: 2px solid #059669 !important;
+            padding: 14px 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        table.taktik-table td {
+            color: #e2e8f0 !important;
+            border-color: rgba(27, 46, 34, 0.6) !important;
+            padding: 14px 10px;
+            vertical-align: middle;
+            background: rgba(18, 28, 22, 0.4);
+        }
+
+        table.taktik-table tr:hover td {
+            background-color: rgba(16, 185, 129, 0.12) !important;
+            color: #ffffff !important;
+        }
+
+        /* Badge Stilleri */
+        .badge-counter { background: #1b2e22; color: #34d399; padding: 5px 10px; border-radius: 8px; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-counter-danger { background: rgba(220, 38, 38, 0.2); color: #fca5a5; padding: 5px 10px; border-radius: 8px; font-weight: bold; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-counter-warning { background: rgba(234, 179, 8, 0.2); color: #fde047; padding: 5px 10px; border-radius: 8px; font-weight: bold; border: 1px solid rgba(234, 179, 8, 0.3); }
+        
+        .badge-topar { background: rgba(14, 116, 144, 0.2); color: #38bdf8; padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.3); }
+        
+        .badge-umumy { background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 5px 12px; border-radius: 8px; font-weight: 900; border: 1px solid rgba(16, 185, 129, 0.4); }
+        .badge-umumy-danger { background: rgba(220, 38, 38, 0.2); color: #fca5a5; padding: 5px 12px; border-radius: 8px; font-weight: 900; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-umumy-warning { background: rgba(234, 179, 8, 0.2); color: #fde047; padding: 5px 12px; border-radius: 8px; font-weight: 900; border: 1px solid rgba(234, 179, 8, 0.4); }
+
+        /* DataTables Export Düwmeleri Styling */
+        #reiting_export_buttons .dt-buttons {
+            display: inline-flex !important;
+            gap: 8px;
+            background: transparent;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        #reiting_export_buttons .dt-buttons .btn,
+        #reiting_export_buttons .dt-buttons .dt-button {
+            background-color: #1b2e22 !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.4) !important;
+            border-radius: 10px !important;
+            font-weight: bold !important;
+            padding: 8px 16px !important;
+            transition: all 0.2s ease;
+        }
+
+        #reiting_export_buttons .dt-buttons .btn:hover,
+        #reiting_export_buttons .dt-buttons .dt-button:hover {
+            background-color: #059669 !important;
+            color: #fff !important;
+            box-shadow: 0 0 12px rgba(5, 150, 105, 0.5);
+        }
+
+        /* Footer Stili */
+        .site_footer {
+            background-color: #050a08 !important;
+            border-top: 2px solid rgba(16, 185, 129, 0.2);
+            color: #94a3b8;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+    </style>
+
+    <!-- JS Skriptler -->
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatables.min.js' %}"></script>
+    <script src="{% static 'assets/js/pdfmake.min.js' %}"></script>
+    <script src="{% static 'assets/js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+    <script>
+        (function () {
+            function toggleFooterExtra() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                var fullHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+                var atBottom = (scrollTop + windowHeight) >= (fullHeight - 8);
+                document.body.classList.toggle('footer-expanded', atBottom);
+            }
+
+            window.addEventListener('scroll', toggleFooterExtra, { passive: true });
+            window.addEventListener('resize', toggleFooterExtra);
+            toggleFooterExtra();
+        })();
+    </script>
+    
+    <!-- Export we PDF Skripti -->
+    <script>
+        $(document).ready(function(){
+            function getTableBodyFromDom(tableSelector) {
+                var body = [];
+                var $table = $(tableSelector);
+
+                var header = [];
+                $table.find('thead th').each(function () {
+                    header.push($(this).text().trim());
+                });
+                if (header.length) {
+                    body.push(header);
+                }
+
+                $table.find('tbody tr').each(function () {
+                    var row = [];
+                    $(this).find('td').each(function () {
+                        row.push($(this).text().trim());
+                    });
+                    if (row.length) {
+                        body.push(row);
+                    }
+                });
+
+                return body;
+            }
+
+            var table = $('#reiting_export_table').DataTable({
+                dom: 'B',
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                buttons: [
+                    'Nusgalamak',
+                    'csv',
+                    'excel',
+                    {
+                        text: 'PDF',
+                        action: function () {
+                            var sections = [
+                                { title: 'Yokary baha alanlar', table: '#reiting_yokary', headerColor: '#17261d', titleColor: '#0d1511' },
+                                { title: 'Pes baha alanlar', table: '#reiting_pes', headerColor: '#261717', titleColor: '#150d0d' },
+                                { title: 'Gyzlaryn reytingi', table: '#reiting_gyz', headerColor: '#262317', titleColor: '#15130d' },
+                                { title: 'Gyzlaryn pes baha alanlary', table: '#reiting_gyz_pes', headerColor: '#172026', titleColor: '#0d1115' }
+                            ];
+
+                            var content = [];
+                            function buildTableBodyWithStyles(sectionBody, headerColor) {
+                                var styledBody = [];
+
+                                for (var r = 0; r < sectionBody.length; r++) {
+                                    var row = [];
+                                    for (var c = 0; c < sectionBody[r].length; c++) {
+                                        row.push({
+                                            text: sectionBody[r][c],
+                                            fillColor: r === 0 ? headerColor : '#121c16',
+                                            color: r === 0 ? '#34d399' : '#e2e8f0',
+                                            bold: r === 0,
+                                            margin: [5, 6, 5, 6]
+                                        });
+                                    }
+                                    styledBody.push(row);
+                                }
+
+                                return styledBody;
+                            }
+
+                            for (var i = 0; i < sections.length; i++) {
+                                var sectionBody = getTableBodyFromDom(sections[i].table);
+                                if (!sectionBody.length) {
+                                    continue;
+                                }
+
+                                content.push({
+                                    table: {
+                                        widths: ['*'],
+                                        body: [[{
+                                            text: sections[i].title,
+                                            style: 'sectionTitle',
+                                            fillColor: sections[i].titleColor,
+                                            color: '#34d399',
+                                            border: [true, true, true, false],
+                                            margin: [8, 8, 8, 8]
+                                        }]]
+                                    },
+                                    layout: {
+                                        hLineColor: function () { return '#1b2e22'; },
+                                        vLineColor: function () { return '#1b2e22'; },
+                                        hLineWidth: function () { return 1; },
+                                        vLineWidth: function () { return 1; }
+                                    },
+                                    margin: [0, i === 0 ? 0 : 12, 0, 0]
+                                });
+
+                                content.push({
+                                    table: {
+                                        headerRows: 1,
+                                        widths: [26, '*', '*', 58, 62, 62, 58, 62, 62, 46],
+                                        body: buildTableBodyWithStyles(sectionBody, sections[i].headerColor)
+                                    },
+                                    layout: {
+                                        hLineColor: function () { return '#1b2e22'; },
+                                        vLineColor: function () { return '#1b2e22'; },
+                                        hLineWidth: function () { return 0.8; },
+                                        vLineWidth: function () { return 0.8; }
+                                    },
+                                    margin: [0, 0, 0, 12]
+                                });
+                            }
+
+                            var docDefinition = {
+                                pageOrientation: 'landscape',
+                                pageSize: 'A4',
+                                content: content,
+                                styles: {
+                                    sectionTitle: {
+                                        bold: true,
+                                        fontSize: 14
+                                    }
+                                },
+                                defaultStyle: {
+                                    fontSize: 10
+                                }
+                            };
+
+                            pdfMake.createPdf(docDefinition).download('Reiting_Sanaw.pdf');
+                        }
+                    },
+                    'print'
+                ]
+            });
+
+            table.buttons().container().appendTo('#reiting_export_buttons');
+            $('#reiting_export_table_wrapper').hide();
+        });
+    </script>
+</body>
+
+</html>
