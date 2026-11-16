@@ -1,4 +1,5 @@
-name: My First CI
+
+name: Django VPS Deploy
 
 on:
   push:
@@ -6,7 +7,7 @@ on:
       - main
 
 jobs:
-  connect:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,12 +16,64 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sshpass
 
-      - name: Download Project
+      - name: Deploy Django Project
         env:
           SSHPASS: ${{ secrets.gizlin }}
         run: |
           sshpass -e ssh \
             -o StrictHostKeyChecking=accept-new \
-            -p 22 \
+            -p 9210 \
             root@153.75.82.12 \
-            "git pull https://github.com/BerdiMeredow/mypro.git   /var/www/mypro"
+            'bash -s' <<'REMOTE'
+
+          set -e
+
+          echo "Python we Django gurulýar..."
+
+          apt-get update
+          apt-get install -y git python3 python3-pip python3-venv
+
+          mkdir -p /var/www
+
+          cd /var/www
+
+          if [ ! -d "mypro/.git" ]; then
+              echo "Taslama ýok. GitHub-dan clone edilýär..."
+              git clone https://github.com/BerdiMeredow/mypro.git mypro
+          else
+              echo "Taslama bar. Täzelenýär..."
+              cd mypro
+              git pull origin main
+          fi
+
+          cd /var/www/mypro
+
+          echo "Virtual environment barlanýar..."
+
+          if [ ! -d "venv" ]; then
+              python3 -m venv venv
+          fi
+
+          source venv/bin/activate
+
+          echo "Pip täzelenýär..."
+          pip install --upgrade pip
+
+          if [ -f requirements.txt ]; then
+              pip install -r requirements.txt
+          else
+              pip install django gunicorn
+          fi
+
+          echo "Django barlanýar..."
+          python -m django --version
+
+          echo "Database migrasiýasy..."
+          python manage.py migrate
+
+          echo "Static faýllar ýygnalýar..."
+          python manage.py collectstatic --noinput
+
+          echo "Deploy tamamlandy!"
+
+          REMOTE
