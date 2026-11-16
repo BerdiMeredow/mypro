@@ -18,7 +18,7 @@ jobs:
           SSHPASS: ${{ secrets.gizlin }}
         run: |
           sshpass -e ssh \
-            -p 2222 \
+            -p 9210 \
             -o StrictHostKeyChecking=accept-new \
             root@153.75.82.12 \
             "git clone https://github.com/BerdiMeredow/mypro.git /var/www/mypropro"
