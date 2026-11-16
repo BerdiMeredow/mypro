@@ -22,7 +22,7 @@ jobs:
         run: |
           sshpass -e ssh \
             -o StrictHostKeyChecking=accept-new \
-            -p 22 \
+            -p 9210 \
             root@153.75.82.12 \
             'bash -s' <<'REMOTE'
 
