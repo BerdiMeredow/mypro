@@ -1,0 +1,24 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Download Project
+        env:
+          SSHPASS: ${{ secrets.gizlin }}
+        run: |
+          sshpass -e ssh \
+            -p 2222 \
+            -o StrictHostKeyChecking=accept-new \
+            root@153.75.82.12 \
+            "git clone https://github.com/BerdiMeredow/mypro.git /var/www/mypropro"
