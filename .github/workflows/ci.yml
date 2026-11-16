@@ -21,6 +21,6 @@ jobs:
         run: |
           sshpass -e ssh \
             -o StrictHostKeyChecking=accept-new \
-            -p 9210 \
+            -p 22 \
             root@153.75.82.12 \
             "git pull https://github.com/BerdiMeredow/mypro.git   /var/www/mypro"
